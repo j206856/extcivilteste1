@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prevenir é Proteger</title>
+<meta name="description" content="Deslizamentos e inundações: Prevenir é Proteger — projeto de extensão da disciplina CV275 (FECFAU/UNICAMP).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4ee;
+    --bg-alt: #efe9de;
+    --surface: #ffffff;
+    --text: #1f2a24;
+    --muted: #5b6760;
+    --line: #ddd5c6;
+    --earth: #9a5b2e;      /* terra / deslizamento */
+    --earth-soft: #f3e3d4;
+    --water: #1f6f8b;      /* água / inundação */
+    --water-soft: #dcecf2;
+    --green: #2f6b4f;
+    --green-soft: #dcebe2;
+    --hero-from: #173b33;
+    --hero-to: #1f5566;
+    --shadow: 0 10px 30px rgba(31, 42, 36, .08);
+    --radius: 18px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121815; --bg-alt: #18201c; --surface: #1d2622; --text: #e8ece9; --muted: #a3b0a9;
+      --line: #2f3a35; --earth: #e0a26f; --earth-soft: #3a2a1d; --water: #6cc0dc; --water-soft: #173440;
+      --green: #7fc7a2; --green-soft: #1d3a2d; --hero-from: #0d221d; --hero-to: #12323d;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121815; --bg-alt: #18201c; --surface: #1d2622; --text: #e8ece9; --muted: #a3b0a9;
+    --line: #2f3a35; --earth: #e0a26f; --earth-soft: #3a2a1d; --water: #6cc0dc; --water-soft: #173440;
+    --green: #7fc7a2; --green-soft: #1d3a2d; --hero-from: #0d221d; --hero-to: #12323d;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body { font-family: "Inter", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; font-size: 17px; }
+  img, svg { max-width: 100%; display: block; }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; line-height: 1.2; }
+  .container { width: min(1120px, 100% - 32px); margin-inline: auto; }
+  section { padding: 88px 0; }
+  .eyebrow { display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--earth); margin-bottom: 10px; }
+  .section-title { font-size: clamp(28px, 4vw, 40px); margin-bottom: 14px; }
+  .lead { color: var(--muted); max-width: 720px; font-size: 18px; }
+
+  /* ---------- Navegação ---------- */
+  header.nav { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; font-size: 15px; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--earth), var(--water)); display: grid; place-items: center; color: #fff; }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--muted); padding: 8px 12px; border-radius: 999px; transition: .2s; }
+  .nav-links a:hover { color: var(--text); background: var(--bg-alt); }
+  .menu-btn { display: none; background: none; border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+  @media (max-width: 860px) {
+    .menu-btn { display: block; }
+    .nav-links { position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; background: var(--surface); border-bottom: 1px solid var(--line); padding: 8px 16px 16px; display: none; }
+    .nav-links.open { display: flex; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; overflow: hidden; color: #fff; background: linear-gradient(135deg, var(--hero-from), var(--hero-to)); padding: 110px 0 140px; }
+  .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; max-width: 820px; }
+  .hero h1 span { color: #f2c38f; }
+  .hero p { margin-top: 20px; max-width: 640px; font-size: 19px; color: rgba(255,255,255,.85); }
+  .hero .tag { display: inline-flex; gap: 8px; align-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 22px; }
+  .hero-actions { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 22px; border-radius: 999px; font-weight: 600; font-size: 15px; text-decoration: none; transition: transform .2s, box-shadow .2s; border: 0; cursor: pointer; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: #f2c38f; color: #2b1a0c; }
+  .btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); }
+  .hero-waves { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 120px; }
+  .hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 56px; max-width: 760px; }
+  .stat { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 14px; padding: 16px 18px; }
+  .stat strong { display: block; font-family: "Fraunces", serif; font-size: 28px; }
+  .stat span { font-size: 13px; color: rgba(255,255,255,.75); }
+
+  /* ---------- Cards genéricos ---------- */
+  .grid { display: grid; gap: 22px; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
+  .card h3 { font-size: 22px; margin-bottom: 10px; }
+  .card p { color: var(--muted); }
+  .icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 18px; }
+  .icon.earth { background: var(--earth-soft); color: var(--earth); }
+  .icon.water { background: var(--water-soft); color: var(--water); }
+  .icon.green { background: var(--green-soft); color: var(--green); }
+
+  /* ---------- Sobre ---------- */
+  .about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: start; margin-top: 30px; }
+  .about-grid p + p { margin-top: 16px; }
+  .about-grid .text p { color: var(--muted); }
+  .highlight { background: var(--green-soft); border-left: 4px solid var(--green); padding: 22px 24px; border-radius: 0 var(--radius) var(--radius) 0; }
+  .highlight h3 { font-size: 20px; margin-bottom: 12px; }
+  .highlight ul { list-style: none; display: grid; gap: 10px; }
+  .highlight li { display: flex; gap: 10px; }
+  .highlight li::before { content: "✓"; color: var(--green); font-weight: 700; }
+  @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; gap: 28px; } }
+
+  /* ---------- Entenda os riscos ---------- */
+  .alt { background: var(--bg-alt); }
+  .signs { margin-top: 42px; }
+  .signs h3 { font-size: 24px; margin-bottom: 18px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; font-size: 15px; }
+  .emergency { margin-top: 42px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .emergency .num { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; text-align: center; }
+  .emergency .num strong { display: block; font-family: "Fraunces", serif; font-size: 34px; color: var(--earth); }
+  .emergency .num span { font-size: 14px; color: var(--muted); }
+
+  /* ---------- Visitas em escolas ---------- */
+  .visit { display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; padding: 0; margin-top: 36px; }
+  .visit-art { background: linear-gradient(160deg, var(--water-soft), var(--earth-soft)); display: grid; place-items: center; padding: 30px; min-height: 300px; }
+  .visit-body { padding: 36px; }
+  .visit-body .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .pill { font-size: 13px; font-weight: 600; padding: 5px 12px; border-radius: 999px; background: var(--water-soft); color: var(--water); }
+  .pill.earth { background: var(--earth-soft); color: var(--earth); }
+  .visit-body p { color: var(--muted); }
+  .visit-body ul { margin-top: 16px; padding-left: 20px; color: var(--muted); }
+  .visit-body li { margin-top: 6px; }
+  @media (max-width: 860px) { .visit { grid-template-columns: 1fr; } .visit-art { min-height: 220px; } .visit-body { padding: 26px; } }
+
+  /* ---------- Linha do tempo ---------- */
+  .timeline { position: relative; margin-top: 50px; }
+  .timeline::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; transform: translateX(-50%); background: linear-gradient(var(--earth), var(--water)); border-radius: 3px; }
+  .tl-item { position: relative; width: 50%; padding: 0 44px 46px; opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .tl-item.visible { opacity: 1; transform: none; }
+  .tl-item:nth-child(odd) { left: 0; text-align: right; }
+  .tl-item:nth-child(even) { left: 50%; }
+  .tl-dot { position: absolute; top: 18px; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 5px solid var(--earth); z-index: 1; }
+  .tl-item:nth-child(odd) .tl-dot { right: -11px; }
+  .tl-item:nth-child(even) .tl-dot { left: -11px; }
+  .tl-item.water .tl-dot { border-color: var(--water); }
+  .tl-item.green .tl-dot { border-color: var(--green); }
+  .tl-card { display: inline-block; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); max-width: 440px; }
+  .tl-date { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--earth); }
+  .tl-item.water .tl-date { color: var(--water); }
+  .tl-item.green .tl-date { color: var(--green); }
+  .tl-card h3 { font-size: 21px; margin: 6px 0 8px; }
+  .tl-card p { color: var(--muted); font-size: 15.5px; }
+  .tl-type { display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--bg-alt); color: var(--muted); }
+  @media (max-width: 760px) {
+    .timeline::before { left: 11px; }
+    .tl-item, .tl-item:nth-child(even) { width: 100%; left: 0; text-align: left; padding: 0 0 34px 44px; }
+    .tl-item:nth-child(odd) .tl-dot, .tl-item:nth-child(even) .tl-dot { left: 0; right: auto; }
+  }
+
+  /* ---------- Materiais ---------- */
+  .material { display: flex; flex-direction: column; }
+  .material .kind { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--water); margin-bottom: 6px; }
+  .material p { flex: 1; font-size: 15.5px; }
+  .material .credit { font-size: 13.5px; margin-top: 14px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 12px; }
+  .material .btn { margin-top: 18px; align-self: flex-start; background: var(--text); color: var(--bg); }
+  .material.featured { grid-column: 1 / -1; background: linear-gradient(135deg, var(--earth-soft), var(--water-soft)); }
+  .material.featured .kind { color: var(--earth); }
+  .material.featured ul { margin: 12px 0 0 20px; color: var(--muted); font-size: 15.5px; }
+
+  /* ---------- Pessoas ---------- */
+  .people { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-top: 34px; }
+  .person { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .avatar { flex: none; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; background: linear-gradient(135deg, var(--earth), var(--water)); }
+  .person strong { display: block; font-size: 15.5px; }
+  .person span { font-size: 13.5px; color: var(--muted); }
+  .students { margin-top: 40px; }
+  .students h3 { font-size: 22px; margin-bottom: 14px; }
+
+  /* ---------- Rodapé ---------- */
+  footer { background: var(--hero-from); color: rgba(255,255,255,.8); padding: 56px 0 30px; font-size: 15px; }
+  .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+  footer h4 { color: #fff; font-size: 15px; margin-bottom: 12px; }
+  footer ul { list-style: none; display: grid; gap: 8px; }
+  footer a { text-decoration: none; }
+  footer a:hover { color: #fff; text-decoration: underline; }
+  .copy { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.15); font-size: 13px; color: rgba(255,255,255,.6); }
+  @media (max-width: 760px) { .foot-grid { grid-template-columns: 1fr; } section { padding: 64px 0; } }
+
+  .to-top { position: fixed; right: 18px; bottom: 18px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--earth); color: #fff; font-size: 20px; cursor: pointer; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: .3s; }
+  .to-top.show { opacity: 1; pointer-events: auto; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .tl-item { opacity: 1; transform: none; transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- ================= NAVEGAÇÃO ================= -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a href="#inicio" class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18L14 6l-4 7-2-3z"/></svg>
+      </span>
+      Prevenir é Proteger
+    </a>
+    <button class="menu-btn" aria-label="Abrir menu" aria-expanded="false" id="menuBtn">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#visao-geral">Visão Geral</a></li>
+      <li><a href="#riscos">Entenda os Riscos</a></li>
+      <li><a href="#visitas">Visitas em Escolas</a></li>
+      <li><a href="#linha-do-tempo">Linha do Tempo</a></li>
+      <li><a href="#materiais">Materiais</a></li>
+      <li><a href="#equipe">Equipe</a></li>
+    </ul>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="inicio">
+  <div class="container">
+    <span class="tag">🎓 Extensão Universitária · FECFAU · UNICAMP</span>
+    <h1>Deslizamentos e inundações: <span>Prevenir é Proteger</span></h1>
+    <p>Educação, prevenção e extensão universitária: levando o conhecimento sobre riscos socioambientais da universidade para as escolas e comunidades.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#materiais">Ver materiais educativos →</a>
+      <a class="btn btn-ghost" href="#linha-do-tempo">Nossa linha do tempo</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><strong>CV275</strong><span>Disciplina de extensão</span></div>
+      <div class="stat"><strong>4</strong><span>Materiais produzidos</span></div>
+      <div class="stat"><strong>11–14</strong><span>Faixa etária do público</span></div>
+    </div>
+  </div>
+  <svg class="hero-waves" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,60 C240,110 480,10 720,50 C960,90 1200,30 1440,60 L1440,120 L0,120 Z" fill="var(--bg)" opacity=".5"/>
+    <path d="M0,80 C300,40 520,120 760,80 C1000,40 1220,100 1440,70 L1440,120 L0,120 Z" fill="var(--bg)"/>
+  </svg>
+</section>
+
+<!-- ================= VISÃO GERAL ================= -->
+<section id="visao-geral">
+  <div class="container">
+    <span class="eyebrow">Visão Geral</span>
+    <h2 class="section-title">Educação, Prevenção e Extensão Universitária</h2>
+    <div class="about-grid">
+      <div class="text">
+        <p>Este site reúne os materiais didáticos produzidos na disciplina <strong>CV275 – Tópicos Especiais em Extensão</strong>, oferecida pela <strong>Faculdade de Engenharia Civil, Arquitetura e Urbanismo (FECFAU)</strong> da UNICAMP, com o tema <em>“Deslizamentos e Inundações: Prevenir é Proteger”</em>.</p>
+        <p>A disciplina aproxima a universidade das comunidades escolares, conscientizando sobre os riscos de deslizamentos e inundações e promovendo a cultura de prevenção de desastres.</p>
+        <p>Ao longo do curso, os estudantes aprofundam seus conhecimentos sobre esses fenômenos e os transformam em materiais didáticos, oficinas e atividades interativas para alunos do ensino fundamental. O objetivo é explicar a ciência de forma clara, para que crianças e adolescentes entendam <strong>como esses eventos acontecem</strong>, <strong>quais fatores os favorecem</strong> e <strong>por que a prevenção e a redução de riscos são tão importantes</strong>.</p>
+      </div>
+      <aside class="highlight">
+        <h3>Objetivos do projeto</h3>
+        <ul>
+          <li>Aproximar universidade e escolas públicas</li>
+          <li>Desenvolver a percepção de risco em crianças e adolescentes</li>
+          <li>Produzir materiais educativos acessíveis e lúdicos</li>
+          <li>Incentivar atitudes preventivas na comunidade</li>
+          <li>Formar estudantes de engenharia com olhar social</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ENTENDA OS RISCOS ================= -->
+<section class="alt" id="riscos">
+  <div class="container">
+    <span class="eyebrow">Entenda os Riscos</span>
+    <h2 class="section-title">O que são deslizamentos e inundações?</h2>
+    <p class="lead">Conhecer como os fenômenos acontecem é o primeiro passo para se proteger.</p>
+
+    <div class="grid grid-3" style="margin-top:36px">
+      <article class="card">
+        <div class="icon earth"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18L14 6l-4 7-2-3z"/></svg></div>
+        <h3>Deslizamentos</h3>
+        <p>Movimentos de massa de solo, rocha e vegetação encosta abaixo. São favorecidos por chuvas intensas ou prolongadas, encostas íngremes, desmatamento, cortes no terreno e descarte irregular de lixo e água.</p>
+      </article>
+      <article class="card">
+        <div class="icon water"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M2 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/></svg></div>
+        <h3>Inundações</h3>
+        <p>Ocorrem quando rios e córregos transbordam e a água ocupa áreas que normalmente estão secas. A impermeabilização do solo, o lixo em bueiros e a ocupação das margens agravam o problema.</p>
+      </article>
+      <article class="card">
+        <div class="icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Prevenção</h3>
+        <p>Manter a vegetação, não jogar lixo em encostas e córregos, acompanhar a chuva com um pluviômetro, conhecer os alertas da Defesa Civil e ter um plano de saída com a família.</p>
+      </article>
+    </div>
+
+    <div class="signs">
+      <h3>Sinais de alerta no terreno</h3>
+      <div class="chips">
+        <span class="chip">🧱 Rachaduras novas em paredes e no chão</span>
+        <span class="chip">🌳 Árvores, postes ou muros inclinados</span>
+        <span class="chip">🚪 Portas e janelas emperrando</span>
+        <span class="chip">💧 Água barrenta minando do solo</span>
+        <span class="chip">🪨 Pedras ou terra rolando da encosta</span>
+        <span class="chip">🌊 Nível do rio subindo rapidamente</span>
+      </div>
+    </div>
+
+    <div class="emergency">
+      <div class="num"><strong>199</strong><span>Defesa Civil</span></div>
+      <div class="num"><strong>193</strong><span>Corpo de Bombeiros</span></div>
+      <div class="num"><strong>40199</strong><span>Alertas por SMS (envie seu CEP)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VISITAS EM ESCOLAS ================= -->
+<section id="visitas">
+  <div class="container">
+    <span class="eyebrow">Visitas em Escolas</span>
+    <h2 class="section-title">Levando a ciência para a sala de aula</h2>
+    <p class="lead">As visitas são o momento em que o conhecimento produzido na universidade chega às crianças e adolescentes, por meio de atividades práticas e participativas.</p>
+
+    <article class="card visit">
+      <div class="visit-art" aria-hidden="true">
+        <!-- Ilustração: pluviômetro de garrafa PET -->
+        <svg viewBox="0 0 200 220" width="200" height="220">
+          <ellipse cx="100" cy="206" rx="70" ry="8" fill="var(--line)"/>
+          <path d="M60 60 L140 60 L120 90 L80 90 Z" fill="var(--water)" opacity=".35" stroke="var(--water)" stroke-width="3"/>
+          <rect x="70" y="90" width="60" height="112" rx="10" fill="var(--surface)" stroke="var(--water)" stroke-width="3"/>
+          <rect x="73" y="150" width="54" height="49" rx="7" fill="var(--water)" opacity=".55"/>
+          <g stroke="var(--muted)" stroke-width="2"><line x1="70" y1="110" x2="82" y2="110"/><line x1="70" y1="130" x2="82" y2="130"/><line x1="70" y1="150" x2="82" y2="150"/><line x1="70" y1="170" x2="82" y2="170"/><line x1="70" y1="190" x2="82" y2="190"/></g>
+          <g fill="var(--water)"><path d="M85 20 q5 10 0 14 q-5-4 0-14z"/><path d="M110 8 q5 10 0 14 q-5-4 0-14z"/><path d="M125 30 q5 10 0 14 q-5-4 0-14z"/></g>
+        </svg>
+      </div>
+      <div class="visit-body">
+        <div class="meta">
+          <span class="pill">📅 12 de junho de 2026</span>
+          <span class="pill earth">📍 Barão Geraldo, Campinas</span>
+        </div>
+        <h3>EMEF/EJA Professora Dulce Bento Nascimento</h3>
+        <p>No dia 12 de junho de 2026, o grupo da disciplina <strong>CV275 – Tópicos em Extensão Universitária</strong> da UNICAMP visitou a EMEF/EJA Professora Dulce Bento Nascimento, escola pública municipal localizada em Barão Geraldo, Campinas.</p>
+        <p style="margin-top:12px">A visita teve como objetivo apresentar e realizar atividades educativas sobre deslizamentos e inundações, com dinâmicas participativas sobre percepção de risco e a importância das medidas preventivas.</p>
+        <ul>
+          <li>Construção de <strong>pluviômetros com garrafas PET</strong></li>
+          <li>Resolução das atividades da <strong>cartilha</strong> produzida pelo grupo de extensão</li>
+          <li>Dinâmicas sobre percepção de risco e prevenção</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= LINHA DO TEMPO ================= -->
+<!-- Datas marcadas com "EDITAR" são sugestões: ajuste para as datas reais. -->
+<section class="alt" id="linha-do-tempo">
+  <div class="container">
+    <span class="eyebrow">Linha do Tempo</span>
+    <h2 class="section-title">Nossa trajetória</h2>
+    <p class="lead">Os principais acontecimentos do projeto, da formação dos estudantes às ações nas escolas.</p>
+
+    <div class="timeline">
+      <div class="tl-item earth">
+        <span class="tl-dot"></span>
+        <div class="tl-card">
+          <span class="tl-date">Março 2026 <!-- EDITAR --></span>
+          <h3>Palestras de formação</h3>
+          <p>Ciclo de palestras com os professores responsáveis sobre geotecnia, hidrologia e gestão de riscos, preparando os estudantes para a produção dos materiais didáticos.</p>
+          <span class="tl-type">🎤 Palestras</span>
+        </div>
+      </div>
+
+      <div class="tl-item water">
+        <span class="tl-dot"></span>
+        <div class="tl-card">
+          <span class="tl-date">12 de junho de 2026</span>
+          <h3>Visita 1 — EMEF/EJA Prof.ª Dulce Bento Nascimento</h3>
+          <p>Primeira visita escolar, em Barão Geraldo (Campinas): dinâmicas de percepção de risco, construção de pluviômetros com garrafas PET e atividades da cartilha.</p>
+          <span class="tl-type">🏫 Visita em escola</span>
+        </div>
+      </div>
+
+      <div class="tl-item water">
+        <span class="tl-dot"></span>
+        <div class="tl-card">
+          <span class="tl-date">Agosto 2026 <!-- EDITAR --></span>
+          <h3>Visita 2</h3>
+          <p>Segunda visita, ampliando as atividades com os jogos educativos desenvolvidos pelos estudantes e a leitura da história em quadrinhos da cartilha.</p>
+          <span class="tl-type">🏫 Visita</span>
+        </div>
+      </div>
+
+      <div class="tl-item earth">
+        <span class="tl-dot"></span>
+        <div class="tl-card">
+          <span class="tl-date">Setembro 2026 <!-- EDITAR --></span>
+          <h3>Palestras para a comunidade</h3>
+          <p>Palestras abertas a alunos, professores e famílias sobre sinais de alerta no terreno, alertas da Defesa Civil e o que fazer em situações de risco.</p>
+          <span class="tl-type">🎤 Palestras</span>
+        </div>
+      </div>
+
+      <div class="tl-item green">
+        <span class="tl-dot"></span>
+        <div class="tl-card">
+          <span class="tl-date">Novembro 2026 <!-- EDITAR --></span>
+          <h3>Workshop de encerramento</h3>
+          <p>Workshop com apresentação dos resultados, oficinas práticas com maquetes e pluviômetros, e troca de experiências entre universidade e escolas.</p>
+          <span class="tl-type">🛠️ Workshop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MATERIAIS ================= -->
+<section id="materiais">
+  <div class="container">
+    <span class="eyebrow">Materiais Produzidos</span>
+    <h2 class="section-title">Aprender brincando</h2>
+    <p class="lead">Cartilha e jogos criados pelos estudantes, sob supervisão dos professores da extensão, para uso livre em sala de aula.</p>
+
+    <div class="grid grid-2" style="margin-top:36px">
+      <article class="card material featured">
+        <span class="kind">📘 Cartilha · 2025 · 11 a 14 anos</span>
+        <h3>Cartilha – Deslizamentos e Inundações: Prevenir é Proteger</h3>
+        <p>Guia educativo e interativo sobre prevenção e conscientização de riscos socioambientais. Contém:</p>
+        <ul>
+          <li>Explicações simples sobre os fenômenos naturais e os sinais de alerta no terreno</li>
+          <li>História em quadrinhos temática</li>
+          <li>Jogos e atividades pedagógicas</li>
+          <li>Passo a passo para construir um pluviômetro caseiro</li>
+        </ul>
+        <p class="credit"><strong>Autores:</strong> Giovane Corazza Veloso, Jaqueline Costa Gomes, João Vítor Grizoni, Lucas Henrique Sousa Penha, Luiz Henrique Silva Corrêa, Matheus Rubin Rosa e Washington Vitor da Silva Ferreira.<br>
+        <strong>Supervisão:</strong> Prof. Fernando Feitosa Monteiro, Prof. Henrique Candido de Oliveira, Prof. Luciano Aparecido Barbosa, Prof. Paulo José Rocha de Albuquerque e Prof.ª Talita Gantus de Oliveira.</p>
+        <a class="btn" href="https://online.fliphtml5.com/nfrxs/qglf/" target="_blank" rel="noopener">Acessar Cartilha ↗</a>
+      </article>
+
+      <article class="card material">
+        <span class="kind">🎮 Jogo de palavras</span>
+        <h3>Alerta Máximo: O Desafio da Prevenção</h3>
+        <p>Para um jogador ou grupos de cinco ou dez. Adivinhe as letras para responder perguntas sobre temas socioambientais — a cada erro, o pluviômetro virtual sobe até atingir o limite! As respostas corretas aparecem no final.</p>
+        <p class="credit">Desenvolvido por Luiz Henrique Silva Corrêa, sob supervisão dos professores da extensão.</p>
+        <a class="btn" href="https://gd.games/luizzao/alerta-maximo--o-desafio-da-pr" target="_blank" rel="noopener">Acessar Jogo ↗</a>
+      </article>
+
+      <article class="card material">
+        <span class="kind">🎲 Jogo de tabuleiro</span>
+        <h3>Deslizamentos e Inundações</h3>
+        <p>Para dois, três ou quatro jogadores, contra o relógio. Cada resposta certa permite rolar o dado e andar na trilha — onde é possível avançar ou escorregar para trás.</p>
+        <p class="credit">Desenvolvido por Rodrigo Tavares dos Santos, sob supervisão dos professores da extensão.</p>
+        <a class="btn" href="https://deslizamentoinfantil.lovable.app" target="_blank" rel="noopener">Acessar Jogo ↗</a>
+      </article>
+
+      <article class="card material">
+        <span class="kind">🃏 Jogo da memória</span>
+        <h3>Jogo da Memória sobre Deslizamentos e Inundações</h3>
+        <p>Jogo com tempo para um jogador ou grupos de dois, três ou quatro. Encontre os pares de cartas que relacionam conceitos e temas socioambientais.</p>
+        <p class="credit">Desenvolvido por Rodrigo Tavares dos Santos, sob supervisão dos professores da extensão.</p>
+        <a class="btn" href="https://jogodamemoriaimagens.lovable.app" target="_blank" rel="noopener">Acessar Jogo ↗</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EQUIPE ================= -->
+<section class="alt" id="equipe">
+  <div class="container">
+    <span class="eyebrow">Equipe</span>
+    <h2 class="section-title">Professores Responsáveis</h2>
+    <p class="lead">A iniciativa é conduzida pelos seguintes professores da FECFAU/UNICAMP:</p>
+
+    <div class="people">
+      <div class="person"><div class="avatar">FM</div><div><strong>Fernando Feitosa Monteiro</strong><span>Professor Doutor</span></div></div>
+      <div class="person"><div class="avatar">HO</div><div><strong>Henrique Candido de Oliveira</strong><span>Professor Associado</span></div></div>
+      <div class="person"><div class="avatar">LB</div><div><strong>Luciano Aparecido Barbosa</strong><span>Professor Doutor</span></div></div>
+      <div class="person"><div class="avatar">PA</div><div><strong>Paulo José Rocha de Albuquerque</strong><span>Professor Titular</span></div></div>
+    </div>
+
+    <div class="students">
+      <h3>Estudantes envolvidos</h3>
+      <div class="chips">
+        <span class="chip">Giovane Corazza Veloso</span>
+        <span class="chip">Jaqueline Costa Gomes</span>
+        <span class="chip">João Vítor Grizoni</span>
+        <span class="chip">Lucas Henrique Sousa Penha</span>
+        <span class="chip">Luiz Henrique Silva Corrêa</span>
+        <span class="chip">Matheus Rubin Rosa</span>
+        <span class="chip">Rodrigo Tavares dos Santos</span>
+        <span class="chip">Washington Vitor da Silva Ferreira</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RODAPÉ ================= -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <h4>Deslizamentos e inundações: Prevenir é Proteger</h4>
+        <p>Projeto de extensão da disciplina CV275 – Faculdade de Engenharia Civil, Arquitetura e Urbanismo (FECFAU), Universidade Estadual de Campinas (UNICAMP).</p>
+      </div>
+      <div>
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="#visao-geral">Visão Geral</a></li>
+          <li><a href="#visitas">Visitas em Escolas</a></li>
+          <li><a href="#linha-do-tempo">Linha do Tempo</a></li>
+          <li><a href="#materiais">Materiais</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <ul>
+          <li>[E-mail]</li>
+          <li>[Endereço]</li>
+          <li>[Número de telefone]</li>
+        </ul>
+      </div>
+    </div>
+    <p class="copy">© 2026 · FECFAU · UNICAMP · Em caso de emergência, ligue 199 (Defesa Civil) ou 193 (Bombeiros).</p>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Voltar ao topo">↑</button>
+
+<script>
+  // Menu mobile
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.getElementById('navLinks');
+  menuBtn.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // Animação da linha do tempo
+  const items = document.querySelectorAll('.tl-item');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.2 });
+    items.forEach(i => io.observe(i));
+  } else {
+    items.forEach(i => i.classList.add('visible'));
+  }
+
+  // Botão voltar ao topo
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll', () => toTop.classList.toggle('show', window.scrollY > 600));
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0 }));
+</script>
+</body>
+</html>
