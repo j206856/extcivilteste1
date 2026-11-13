@@ -116,10 +116,17 @@
   .signs h3 { font-size: 24px; margin-bottom: 18px; }
   .chips { display: flex; flex-wrap: wrap; gap: 10px; }
   .chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; font-size: 15px; }
-  .emergency { margin-top: 42px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-  .emergency .num { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; text-align: center; }
-  .emergency .num strong { display: block; font-family: "Fraunces", serif; font-size: 34px; color: var(--earth); }
-  .emergency .num span { font-size: 14px; color: var(--muted); }
+  .emergency { margin-top: 42px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .emergency .num { --em: #c0392b; --em-soft: #fbe5e2; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; text-decoration: none; color: inherit; background: var(--surface); border: 1px solid var(--line); border-top: 5px solid var(--em); border-radius: 16px; padding: 22px 18px 18px; box-shadow: var(--shadow); transition: transform .2s, box-shadow .2s; }
+  .emergency .num.sms { --em: var(--water); --em-soft: var(--water-soft); }
+  .emergency .num:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0,0,0,.14); }
+  .em-icon { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--em-soft); color: var(--em); margin-bottom: 6px; }
+  .em-tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--em); }
+  .emergency .num strong { display: block; font-family: "Fraunces", serif; font-size: 40px; line-height: 1.1; color: var(--text); letter-spacing: .02em; }
+  .em-name { font-size: 15px; font-weight: 600; }
+  .em-cta { margin-top: 10px; font-size: 13.5px; font-weight: 600; color: #fff; background: var(--em); padding: 7px 14px; border-radius: 999px; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .emergency .num:not(.sms) { --em: #ff7b6b; --em-soft: #3d2220; } }
+  :root[data-theme="dark"] .emergency .num:not(.sms) { --em: #ff7b6b; --em-soft: #3d2220; }
 
   /* ---------- Construa seu pluviômetro ---------- */
   .pluvio-intro { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; margin-top: 36px; align-items: stretch; }
@@ -159,7 +166,14 @@
   .install .big { font-family: "Fraunces", serif; font-size: 30px; color: var(--green); line-height: 1; margin-bottom: 8px; }
 
   .sim { display: grid; grid-template-columns: 220px 1fr; gap: 34px; align-items: center; }
-  .sim-bottle svg { width: 100%; max-width: 200px; margin-inline: auto; }
+  .sim-bottle svg { width: 100%; max-width: 220px; margin-inline: auto; overflow: visible; }
+  .sim-drop { stroke: var(--water); stroke-width: 2.2; stroke-linecap: round; opacity: 0; animation: simRain 1s linear infinite; }
+  @keyframes simRain { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .9; } 85% { opacity: .9; } 100% { transform: translateY(46px); opacity: 0; } }
+  .sim-cloud { animation: cloudFloat 4s ease-in-out infinite; }
+  @keyframes cloudFloat { 0%,100% { transform: translateX(-2px); } 50% { transform: translateX(2px); } }
+  #sim-bolt.on { animation: bolt 2.6s steps(1) infinite; }
+  @keyframes bolt { 0%, 100% { opacity: 0; } 72% { opacity: 1; } 76% { opacity: 0; } 80% { opacity: 1; } 84% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .sim-drop { animation: none; opacity: .8; } .sim-cloud, #sim-bolt.on { animation: none; } }
   .sim h4 { font-size: 22px; margin-bottom: 6px; }
   .sim input[type=range] { width: 100%; accent-color: var(--water); margin: 18px 0 8px; height: 28px; }
   .sim-out { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
@@ -268,6 +282,12 @@
   .contact a { color: #fff; }
   .map-box { border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.2); aspect-ratio: 4 / 3; background: rgba(255,255,255,.06); }
   .map-box iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .map-box #fecfau-map { width: 100%; height: 100%; }
+  .map-box .leaflet-container { font-family: "Inter", sans-serif; background: #e9ecef; }
+  .fecfau-pin { position: relative; }
+  .fecfau-pin .pin { position: absolute; left: 50%; bottom: 0; width: 26px; height: 26px; transform: translateX(-50%) rotate(-45deg); transform-origin: center; border-radius: 50% 50% 50% 0; background: #d93025; border: 3px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); margin-bottom: 4px; }
+  .fecfau-pin .pin::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: #fff; }
+  .fecfau-pin .tag { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); white-space: nowrap; background: #1f2a24; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
   .map-link { display: inline-block; margin-top: 10px; font-weight: 600; color: #f2c38f; }
   @media (max-width: 1000px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
   footer h4 { color: #fff; font-size: 15px; margin-bottom: 12px; }
@@ -281,6 +301,7 @@
   .to-top.show { opacity: 1; pointer-events: auto; }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .tl-item { opacity: 1; transform: none; transition: none; } }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 </head>
 <body>
 
@@ -381,9 +402,27 @@
     </div>
 
     <div class="emergency" style="margin-top:0">
-      <div class="num"><strong>199</strong><span>Defesa Civil</span></div>
-      <div class="num"><strong>193</strong><span>Corpo de Bombeiros</span></div>
-      <div class="num"><strong>40199</strong><span>Alertas por SMS (envie seu CEP)</span></div>
+      <a class="num" href="tel:199" aria-label="Ligar para a Defesa Civil, 199">
+        <span class="em-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span>
+        <span class="em-tag">Telefone · Ligue</span>
+        <strong>199</strong>
+        <span class="em-name">Defesa Civil</span>
+        <span class="em-cta">Toque para ligar</span>
+      </a>
+      <a class="num" href="tel:193" aria-label="Ligar para o Corpo de Bombeiros, 193">
+        <span class="em-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span>
+        <span class="em-tag">Telefone · Ligue</span>
+        <strong>193</strong>
+        <span class="em-name">Corpo de Bombeiros</span>
+        <span class="em-cta">Toque para ligar</span>
+      </a>
+      <a class="num sms" href="sms:40199" aria-label="Enviar SMS com seu CEP para 40199 e receber alertas">
+        <span class="em-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></span>
+        <span class="em-tag">SMS · Mensagem de texto</span>
+        <strong>40199</strong>
+        <span class="em-name">Alertas da Defesa Civil</span>
+        <span class="em-cta">Envie seu CEP por SMS</span>
+      </a>
     </div>
   </div>
 </section>
@@ -517,7 +556,17 @@
     <h3 class="sub-title"><span class="n" aria-hidden="true"></span> Como fazer a leitura</h3>
     <div class="card sim">
       <div class="sim-bottle" aria-hidden="true">
-        <svg viewBox="0 0 140 230">
+        <svg viewBox="0 -78 140 308">
+          <g id="sim-rain"></g>
+          <g class="sim-cloud">
+            <g fill="#cfd8dc">
+              <circle cx="36" cy="-46" r="16"/><circle cx="60" cy="-56" r="22"/><circle cx="86" cy="-47" r="17"/><rect x="20" y="-48" width="82" height="20" rx="10"/>
+            </g>
+            <g id="sim-cloud-dark" fill="#4b5862" opacity="0">
+              <circle cx="36" cy="-46" r="16"/><circle cx="60" cy="-56" r="22"/><circle cx="86" cy="-47" r="17"/><rect x="20" y="-48" width="82" height="20" rx="10"/>
+            </g>
+            <polygon id="sim-bolt" points="66,-34 56,-14 64,-14 58,2 74,-22 65,-22 70,-34" fill="#f5c542" opacity="0"/>
+          </g>
           <path d="M14 22 L106 22 C106 40 84 52 74 60 L46 60 C36 52 14 40 14 22 Z" fill="var(--surface)" stroke="var(--water)" stroke-width="3"/>
           <rect x="18" y="40" width="84" height="176" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="3"/>
           <path d="M21 196 H99 V205 q0 8 -8 8 H29 q-8 0 -8 -8 Z" fill="var(--water)" opacity=".35"/>
@@ -561,7 +610,7 @@
       </div>
       <div class="maquete-body">
         <h3>Encosta com e sem vegetação</h3>
-        <p>A maquete reproduz o que aconteceu na <strong>Vila do Sahy</strong>, em São Sebastião (SP), durante as chuvas extremas de fevereiro de 2023, mostrando duas encostas lado a lado: uma coberta por vegetação e outra com o solo exposto. Ao simular a chuva com um regador, os alunos observam como a água escoa, infiltra e arrasta o solo em cada situação, entendendo por que a vegetação e a ocupação correta das encostas ajudam a prevenir desastres.</p>
+        <p>A partir de uma visita realizada à Vila do Sahy, região atingida por deslizamentos de terra em 2023, os alunos do projeto de extensão estão desenvolvendo uma maquete que busca reproduzir as características do local e representar os riscos geológicos presentes na região. Nesse contexto, serão produzidos dois protótipos: um destinado às atividades educativas em escolas de ensino fundamental, com o objetivo de conscientizar os estudantes sobre os riscos de deslizamentos e a importância da prevenção, e outro que permanecerá na FECFAU, contribuindo para a divulgação do projeto e de seus conhecimentos.</p>
 
         <div class="maquete-cols">
           <div>
@@ -780,9 +829,7 @@
       </div>
       <div class="map-col">
         <h4>Como chegar</h4>
-        <div class="map-box">
-          <iframe title="Mapa da FECFAU – UNICAMP" src="https://maps.google.com/maps?q=-22.8164894,-47.063239&z=17&hl=pt-BR&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
+        <div class="map-box"><div id="fecfau-map" role="region" aria-label="Mapa com a localização da FECFAU"></div></div>
         <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=-22.8164894%2C-47.063239" target="_blank" rel="noopener">Abrir no Google Maps ↗</a>
       </div>    </div>
     <p class="copy">© 2026 · FECFAU · UNICAMP · Em caso de emergência, ligue 199 (Defesa Civil) ou 193 (Bombeiros).</p>
@@ -823,6 +870,17 @@
     [30, '⛈️ Chuva forte — fique atento aos sinais de alerta'],
     [60, '🚨 Chuva muito forte — risco elevado de deslizamentos e inundações'],
   ];
+  const rainG = document.getElementById('sim-rain');
+  const drops = [];
+  for (let i = 0; i < 36; i++) {
+    const x = (24 + Math.random() * 72).toFixed(1);
+    const d = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    d.setAttribute('x1', x); d.setAttribute('x2', x); d.setAttribute('y1', -24); d.setAttribute('y2', -19);
+    d.setAttribute('class', 'sim-drop');
+    d.dataset.k = (0.8 + Math.random() * 0.4).toFixed(2);
+    d.style.animationDelay = (-Math.random() * 1.2).toFixed(2) + 's';
+    rainG.appendChild(d); drops.push(d);
+  }
   const updateSim = () => {
     const mm = +simRange.value;
     simWater.setAttribute('y', ZERO_Y - mm * PX_PER_MM);
@@ -830,6 +888,17 @@
     document.getElementById('sim-mm').textContent = mm + ' mm';
     document.getElementById('sim-l').textContent = mm + ' L';
     document.getElementById('sim-level').textContent = levels.filter(l => mm >= l[0]).pop()[1] + ' (referência aproximada para 24 h)';
+    // nuvem e chuva
+    const t = mm / 100;
+    document.getElementById('sim-cloud-dark').setAttribute('opacity', (t * 0.95).toFixed(2));
+    document.getElementById('sim-bolt').classList.toggle('on', mm >= 60);
+    const visible = mm === 0 ? 0 : Math.round(4 + t * (drops.length - 4));
+    const speed = 1.15 - t * 0.7; // segundos para cair
+    drops.forEach((d, i) => {
+      d.style.display = i < visible ? '' : 'none';
+      d.style.animationDuration = (speed * d.dataset.k).toFixed(2) + 's';
+      d.setAttribute('y2', -24 + 5 + t * 7); // gotas mais longas na chuva forte
+    });
   };
   simRange.addEventListener('input', updateSim);
   updateSim();
@@ -878,6 +947,23 @@
   const toTop = document.getElementById('toTop');
   window.addEventListener('scroll', () => toTop.classList.toggle('show', window.scrollY > 600));
   toTop.addEventListener('click', () => window.scrollTo({ top: 0 }));
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  // Mapa da FECFAU (um único marcador, sem outros pontos de interesse)
+  (function () {
+    const el = document.getElementById('fecfau-map');
+    if (!el || !window.L) return;
+    const pos = [-22.8164894, -47.063239];
+    const gmaps = 'https://www.google.com/maps/search/?api=1&query=-22.8164894%2C-47.063239';
+    const map = L.map(el, { scrollWheelZoom: false, attributionControl: true }).setView(pos, 15);
+    const esri = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/';
+    L.tileLayer(esri + 'World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16, attribution: 'Tiles &copy; Esri' }).addTo(map);
+    L.tileLayer(esri + 'World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 }).addTo(map);
+    const icon = L.divIcon({ className: 'fecfau-pin', html: '<span class="tag">FECFAU</span><span class="pin"></span>', iconSize: [0, 0], iconAnchor: [0, 0] });
+    L.marker(pos, { icon, title: 'FECFAU – UNICAMP' }).addTo(map)
+      .on('click', () => window.open(gmaps, '_blank', 'noopener'));
+  })();
 </script>
 </body>
 </html>
